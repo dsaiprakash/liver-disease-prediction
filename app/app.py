@@ -27,8 +27,10 @@ MODEL_PATH = os.path.join(APP_DIR, "lightgbm_model.pkl")
 SCALER_PATH = os.path.join(APP_DIR, "scaler.pkl")
 IMPUTER_PATH = os.path.join(APP_DIR, "imputer.pkl")
 
+print(f"Current working directory: {os.getcwd()}")
 print(f"Looking for models in: {APP_DIR}")
 print(f"Model path: {MODEL_PATH}")
+print(f"Files in APP_DIR: {os.listdir(APP_DIR)}")
 
 # Load models and preprocessors
 try:
@@ -192,8 +194,10 @@ def home():
 def predict():
     """Make prediction with SHAP explanation"""
     try:
+        print("Prediction request received")
         # Check if models are loaded
         if model is None or scaler is None or imputer is None:
+            print(f"Models status - model: {model is not None}, scaler: {scaler is not None}, imputer: {imputer is not None}")
             return jsonify({"error": "Models not loaded", "success": False}), 500
 
         # Get input data
@@ -287,10 +291,13 @@ def predict():
         feature_importance = []
 
         try:
+            print("Starting SHAP calculation")
             # Use shap.Explainer which works better with LGBMClassifier
             # Use the preprocessed input as background data (limited but better than nothing)
             explainer = shap.Explainer(model)
             shap_values = explainer(input_scaled)
+
+            print("SHAP values calculated successfully")
 
             # Get feature contributions
             for i, feature in enumerate(feature_names):
